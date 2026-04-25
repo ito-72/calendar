@@ -32,11 +32,18 @@ async function renderCalendar(year, month) {
         cell.innerHTML = `<div class="date-num">${date}</div>`;
         
         if (dayData) {
+            // 篤志: シフト(2) と タスク(3)
             if (dayData[2]) cell.innerHTML += `<div class="shift-tag atsushi-tag">${dayData[2]}</div>`;
             if (dayData[3]) cell.innerHTML += `<div class="shift-tag atsushi-task-tag">T: ${dayData[3]}</div>`;
+            
+            // 千尋: シフト(4) と タスク(5)
             if (dayData[4]) cell.innerHTML += `<div class="shift-tag chihiro-tag">${dayData[4]}</div>`;
             if (dayData[5]) cell.innerHTML += `<div class="shift-tag chihiro-task-tag">T: ${dayData[5]}</div>`;
-            if (dayData[6]) cell.innerHTML += `<div class="memo-dot">●</div>`;
+            
+            // 備考 (6): 緑色のタグで文字を表示
+            if (dayData[6]) {
+                cell.innerHTML += `<div class="shift-tag memo-tag">${dayData[6]}</div>`;
+            }
         }
         cell.onclick = () => showDetail(date, dayData);
         calendarBody.appendChild(cell);

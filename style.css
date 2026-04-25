@@ -7,6 +7,9 @@
     --atsushi-accent: #1565c0;
     --chihiro-bg: #fce4ec;
     --chihiro-accent: #c2185b;
+    /* 備考用の優しい緑 */
+    --memo-bg: #e8f5e9;
+    --memo-accent: #2e7d32;
     --weekend-bg: #ffe4b5;
 }
 
@@ -43,10 +46,15 @@ header {
 .is-today { background-color: #fff9db !important; outline: 2px solid var(--sun-color) inset; }
 .date-num { font-weight: bold; }
 
-/* シフトタグ */
+/* シフト・タスク・備考タグ共通 */
 .shift-tag { padding: 3px 5px; border-radius: 6px; font-size: 0.6rem; line-height: 1.2; white-space: pre-wrap; word-break: break-all; }
+
+/* 各種カラー設定 */
 .atsushi-tag, .atsushi-task-tag { background: var(--atsushi-bg); color: var(--atsushi-accent); border-left: 3px solid var(--atsushi-accent); }
 .chihiro-tag, .chihiro-task-tag { background: var(--chihiro-bg); color: var(--chihiro-accent); border-left: 3px solid var(--chihiro-accent); }
+/* 備考（緑） */
+.memo-tag { background: var(--memo-bg); color: var(--memo-accent); border-left: 3px solid var(--memo-accent); margin-top: auto; }
+
 .atsushi-task-tag, .chihiro-task-tag { font-style: italic; opacity: 0.9; }
 
 /* 表示・非表示ロジック */

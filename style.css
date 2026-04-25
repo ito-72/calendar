@@ -7,10 +7,12 @@
     --atsushi-accent: #1565c0;
     --chihiro-bg: #fce4ec;
     --chihiro-accent: #c2185b;
-    /* 備考用の優しい緑 */
     --memo-bg: #e8f5e9;
     --memo-accent: #2e7d32;
     --weekend-bg: #ffe4b5;
+    /* 休み用のオレンジ */
+    --holiday-bg: #fff3e0;
+    --holiday-accent: #ef6c00;
 }
 
 body {
@@ -46,15 +48,21 @@ header {
 .is-today { background-color: #fff9db !important; outline: 2px solid var(--sun-color) inset; }
 .date-num { font-weight: bold; }
 
-/* シフト・タスク・備考タグ共通 */
+/* タグ共通 */
 .shift-tag { padding: 3px 5px; border-radius: 6px; font-size: 0.6rem; line-height: 1.2; white-space: pre-wrap; word-break: break-all; }
 
-/* 各種カラー設定 */
+/* 篤志・千尋通常色 */
 .atsushi-tag, .atsushi-task-tag { background: var(--atsushi-bg); color: var(--atsushi-accent); border-left: 3px solid var(--atsushi-accent); }
 .chihiro-tag, .chihiro-task-tag { background: var(--chihiro-bg); color: var(--chihiro-accent); border-left: 3px solid var(--chihiro-accent); }
-/* 備考（緑） */
-.memo-tag { background: var(--memo-bg); color: var(--memo-accent); border-left: 3px solid var(--memo-accent); margin-top: auto; }
 
+/* 篤志の「休」用オレンジ */
+.atsushi-tag.is-holiday {
+    background: var(--holiday-bg);
+    color: var(--holiday-accent);
+    border-left: 3px solid var(--holiday-accent);
+}
+
+.memo-tag { background: var(--memo-bg); color: var(--memo-accent); border-left: 3px solid var(--memo-accent); margin-top: auto; }
 .atsushi-task-tag, .chihiro-task-tag { font-style: italic; opacity: 0.9; }
 
 /* 表示・非表示ロジック */
@@ -75,7 +83,6 @@ header {
 .tab-btn[data-target="chihiro"].active { color: var(--chihiro-accent); border-top: 3px solid var(--chihiro-accent); }
 .tab-btn[data-target="chihiro-task"].active { color: var(--chihiro-accent); border-top: 3px solid var(--chihiro-accent); }
 
-/* モーダル */
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(4px); }
 .hidden { display: none; }
 .modal-content { background: #fff; padding: 25px; border-radius: 25px; width: 85%; max-width: 350px; }

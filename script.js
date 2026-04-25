@@ -32,18 +32,20 @@ async function renderCalendar(year, month) {
         cell.innerHTML = `<div class="date-num">${date}</div>`;
         
         if (dayData) {
-            // 篤志: シフト(2) と タスク(3)
-            if (dayData[2]) cell.innerHTML += `<div class="shift-tag atsushi-tag">${dayData[2]}</div>`;
+            // 篤志: シフト(2) 「休」が含まれていたら is-holiday クラスを付与
+            if (dayData[2]) {
+                const isHoliday = dayData[2].includes('休');
+                const holidayClass = isHoliday ? 'is-holiday' : '';
+                cell.innerHTML += `<div class="shift-tag atsushi-tag ${holidayClass}">${dayData[2]}</div>`;
+            }
             if (dayData[3]) cell.innerHTML += `<div class="shift-tag atsushi-task-tag">T: ${dayData[3]}</div>`;
             
-            // 千尋: シフト(4) と タスク(5)
+            // 千尋
             if (dayData[4]) cell.innerHTML += `<div class="shift-tag chihiro-tag">${dayData[4]}</div>`;
             if (dayData[5]) cell.innerHTML += `<div class="shift-tag chihiro-task-tag">T: ${dayData[5]}</div>`;
             
-            // 備考 (6): 緑色のタグで文字を表示
-            if (dayData[6]) {
-                cell.innerHTML += `<div class="shift-tag memo-tag">${dayData[6]}</div>`;
-            }
+            // 備考
+            if (dayData[6]) cell.innerHTML += `<div class="shift-tag memo-tag">${dayData[6]}</div>`;
         }
         cell.onclick = () => showDetail(date, dayData);
         calendarBody.appendChild(cell);
@@ -87,7 +89,6 @@ function setupEvents() {
     document.getElementById('nextBtn').onclick = () => { currentMonth++; if(currentMonth>12){currentMonth=1; currentYear++;} renderCalendar(currentYear, currentMonth); };
     document.getElementById('closeModal').onclick = () => document.getElementById('detailModal').classList.add('hidden');
     
-    // タブ切り替えロジック
     document.querySelectorAll('.tab-btn').forEach(tab => {
         tab.onclick = () => {
             tab.classList.toggle('active');

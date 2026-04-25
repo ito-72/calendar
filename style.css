@@ -1,49 +1,75 @@
-/* モーダル内の編集用スタイル */
-.modal-inner-scroll {
-    max-height: 70vh;
-    overflow-y: auto;
-    padding-right: 5px;
+:root {
+    --bg-color: #fdfaf6;
+    --border-color: #eeeeee;
+    --sun-color: #ff6b6b;
+    --sat-color: #4dabf7;
+    --atsushi-bg: #f0f8ff;
+    --atsushi-accent: #1565c0;
+    --chihiro-bg: #fff5f8;
+    --chihiro-accent: #c2185b;
+    --memo-bg: #e8f5e9;
+    --memo-accent: #2e7d32;
+    --weekend-bg: #fffcf0;
+    --holiday-bg: #fff3e0;
+    --holiday-accent: #ef6c00;
+    --warning-bg: #fff0f0;
+    --warning-accent: #d32f2f;
 }
 
-.user-label {
-    margin: 15px 0 5px;
-    font-size: 0.9rem;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-.user-label.atsushi { background: var(--atsushi-bg); color: var(--atsushi-accent); }
-.user-label.chihiro { background: var(--chihiro-bg); color: var(--chihiro-accent); }
-
-.edit-section {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-bottom: 12px;
-}
-.edit-section label {
-    font-size: 0.7rem;
-    color: #888;
-    margin-left: 5px;
-}
-.edit-section textarea {
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 8px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    resize: none;
-    background: #fafafa;
-}
-.edit-section button {
-    align-self: flex-end;
-    width: 80px !important;
-    padding: 6px 0 !important;
-    font-size: 0.8rem !important;
-    background: #d4a373;
-    color: white;
-    border: none;
-    border-radius: 8px;
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0; color: #444;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 70px);
+    user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
 }
 
-hr { border: none; border-top: 1px dashed #eee; margin: 15px 0; }
+header {
+    padding-top: calc(env(safe-area-inset-top) + 15px);
+    padding-bottom: 10px; background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; top: 0; z-index: 10;
+}
+
+.header-controls { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+.header-controls button { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 5px 15px; font-size: 1.2rem; }
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); background: #fff; }
+.day-label { text-align: center; font-size: 0.7rem; padding: 10px 0; font-weight: bold; border-bottom: 1px solid var(--border-color); background: #fafafa; }
+.sun { color: var(--sun-color); }
+.sat { color: var(--sat-color); }
+
+.calendar-contents { display: contents; }
+.date-cell { min-height: 100px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 4px; font-size: 0.75rem; display: flex; flex-direction: column; gap: 2px; }
+.date-cell.is-weekend { background-color: var(--weekend-bg); }
+.is-today { background-color: #fff9db !important; outline: 2px solid var(--sun-color) inset; }
+.date-num { font-weight: bold; }
+
+.shift-tag { padding: 3px 5px; border-radius: 6px; font-size: 0.6rem; line-height: 1.2; white-space: pre-wrap; word-break: break-all; position: relative; }
+.atsushi-tag, .atsushi-task-tag { background: var(--atsushi-bg); color: var(--atsushi-accent); border-left: 3px solid var(--atsushi-accent); }
+.chihiro-tag, .chihiro-task-tag { background: var(--chihiro-bg); color: var(--chihiro-accent); border-left: 3px solid var(--chihiro-accent); }
+.is-holiday { background: var(--holiday-bg) !important; color: var(--holiday-accent) !important; border-left: 3px solid var(--holiday-accent) !important; }
+.is-short-rest { background: var(--warning-bg) !important; color: var(--warning-accent) !important; border-left: 3px solid var(--warning-accent) !important; font-weight: bold; }
+.short-val { display: inline-block; background: var(--warning-accent); color: #fff; padding: 0 3px; border-radius: 3px; margin-left: 3px; font-size: 0.55rem; }
+.memo-tag { background: var(--memo-bg); color: var(--memo-accent); border-left: 3px solid var(--memo-accent); margin-top: auto; }
+.atsushi-task-tag, .chihiro-task-tag { font-style: italic; opacity: 0.9; }
+
+/* 表示・非表示ロジック */
+.hide-atsushi .atsushi-tag { display: none; }
+.hide-atsushi-task .atsushi-task-tag { display: none; }
+.hide-chihiro .chihiro-tag { display: none; }
+.hide-chihiro-task .chihiro-task-tag { display: none; }
+
+.bottom-tabs { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; background: #fff; border-top: 1px solid var(--border-color); padding-bottom: env(safe-area-inset-bottom); z-index: 20; }
+.tab-btn { flex: 1; border: none; background: none; padding: 12px 5px; font-size: 0.65rem; font-weight: bold; color: #ccc; transition: 0.2s; }
+.tab-btn[data-target="atsushi"].active { color: var(--atsushi-accent); border-top: 3px solid var(--atsushi-accent); }
+.tab-btn[data-target="atsushi-task"].active { color: var(--atsushi-accent); border-top: 3px solid var(--atsushi-accent); }
+.tab-btn[data-target="chihiro"].active { color: var(--chihiro-accent); border-top: 3px solid var(--chihiro-accent); }
+.tab-btn[data-target="chihiro-task"].active { color: var(--chihiro-accent); border-top: 3px solid var(--chihiro-accent); }
+
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(4px); }
+.hidden { display: none; }
+.modal-content { background: #fff; padding: 25px; border-radius: 25px; width: 85%; max-width: 350px; }
+.edit-section input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+.edit-section button { width: 100%; padding: 12px; background: #d4a373; color: white; border: none; border-radius: 12px; font-weight: bold; }
+#closeModal { width: 100%; margin-top: 20px; padding: 10px; background: #eee; border: none; border-radius: 12px; color: #777; }

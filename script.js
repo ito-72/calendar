@@ -4,12 +4,12 @@ let currentMonth = new Date().getMonth() + 1;
 window.addEventListener('DOMContentLoaded', () => init());
 
 async function init() {
+    // デフォルトで千尋さんの情報を隠す設定を適用
     document.body.classList.add('hide-chihiro', 'hide-chihiro-task');
     setupEvents();
     await renderCalendar(currentYear, currentMonth);
 }
 
-// 時間解析ヘルパー（休息計算用）
 function timeStringToMinutes(str) {
     if (!str) return null;
     const cleanStr = str.replace(/[:：]/g, '').replace(/[～ー]/g, '-');
@@ -95,60 +95,30 @@ async function fetchMonthData(y, m) {
     return data.ok ? data.rows : [];
 }
 
-// 編集用UIを表示するモーダル
 function showDetail(date, data) {
     const modal = document.getElementById('detailModal');
     document.getElementById('modalDateTitle').innerText = `${currentMonth}月 ${date}日`;
-    
-    // 編集セクションを作るヘルパー
-    const makeEditField = (title, user, type, currentVal) => `
-        <div class="edit-section">
-            <label>${title}</label>
-            <textarea id="edit-${user}-${type}" rows="2">${currentVal || ''}</textarea>
-            <button onclick="handleOverwrite(${date}, '${user}', '${type}')">保存</button>
-        </div>
-    `;
-
     document.getElementById('modalDetailBody').innerHTML = `
-        <div class="modal-inner-scroll">
-            <h4 class="user-label atsushi">篤志の予定</h4>
-            ${makeEditField('シフト', 'atsushi', 'shift', data ? data[2] : '')}
-            ${makeEditField('タスク', 'atsushi', 'task', data ? data[3] : '')}
-            <hr>
-            <h4 class="user-label chihiro">千尋の予定</h4>
-            ${makeEditField('シフト', 'chihiro', 'shift', data ? data[4] : '')}
-            ${makeEditField('タスク', 'chihiro', 'task', data ? data[5] : '')}
+        <div class="edit-section">
+            <p><strong>篤志:</strong> ${data ? data[2] : '-'}</p>
+            <input type="text" id="task-atsushi" placeholder="篤志へ追記...">
+            <button onclick="handleSave(${date}, 'atsushi')">書込</button>
         </div>
-    `;
+        <hr>
+        <div class="edit-section">
+            <p><strong>千尋:</strong> ${data ? data[4] : '-'}</p>
+            <input type="text" id="task-chihiro" placeholder="千尋へ追記...">
+            <button onclick="handleSave(${date}, 'chihiro')">書込</button>
+        </div>`;
     modal.classList.remove('hidden');
 }
 
-// 上書き保存処理
-window.handleOverwrite = async (day, user, type) => {
-    const newVal = document.getElementById(`edit-${user}-${type}`).value;
-    const btn = event.target;
-    btn.disabled = true;
-    btn.innerText = "保存中...";
-
-    const res = await fetch('/api/calendar', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ 
-            mode: "overwrite",
-            year: currentYear, month: currentMonth, day: day,
-            user: user, type: type, value: newVal
-        })
-    });
-    
+window.handleSave = async (day, user) => {
+    const val = document.getElementById(`task-${user}`).value;
+    if(!val) return;
+    const res = await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ year: currentYear, month: currentMonth, day: day, user: user, task: val, mode: "" }) });
     const txt = await res.text();
-    if(txt.includes("✅")) {
-        btn.innerText = "完了！";
-        setTimeout(() => location.reload(), 500);
-    } else {
-        alert("失敗しました: " + txt);
-        btn.disabled = false;
-        btn.innerText = "保存";
-    }
+    if(txt.includes("✅")) { alert("保存完了！"); location.reload(); }
 };
 
 function setupEvents() {

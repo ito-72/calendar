@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>ふたりのカレンダー</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="header-controls">
+                <button id="prevBtn">＜</button>
+                <h2 id="currentMonth">2026年 4月</h2>
+                <button id="nextBtn">＞</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="calendar-grid">
+                <div class="day-label sun">日</div>
+                <div class="day-label">月</div>
+                <div class="day-label">火</div>
+                <div class="day-label">水</div>
+                <div class="day-label">木</div>
+                <div class="day-label">金</div>
+                <div class="day-label sat">土</div>
+
+                <div id="calendarBody" class="calendar-contents"></div>
+            </div>
+        </main>
+
+        <div id="detailModal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="modalDateTitle">日付</h3>
+                <div id="modalDetailBody"></div>
+                <button id="closeModal">とじる</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js" type="module"></script>
+</body>
+</html>

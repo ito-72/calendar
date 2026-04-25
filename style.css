@@ -3,18 +3,17 @@
     --border-color: #eeeeee;
     --sun-color: #ff6b6b;
     --sat-color: #4dabf7;
-    --atsushi-bg: #e3f2fd;
+    --atsushi-bg: #f0f8ff; /* 篤志：より淡い水色 */
     --atsushi-accent: #1565c0;
-    --chihiro-bg: #fce4ec;
+    --chihiro-bg: #fff5f8; /* 千尋：ご要望通りさらに薄いピンク */
     --chihiro-accent: #c2185b;
     --memo-bg: #e8f5e9;
     --memo-accent: #2e7d32;
-    --weekend-bg: #ffe4b5;
+    --weekend-bg: #fffcf0; /* 土日：より淡く、優しいペールクリーム */
     --holiday-bg: #fff3e0;
     --holiday-accent: #ef6c00;
-    /* 休息不足アラート用の色 */
-    --warning-bg: #ffebee;
-    --warning-accent: #e53935;
+    --warning-bg: #fff0f0;
+    --warning-accent: #d32f2f;
 }
 
 body {
@@ -42,7 +41,10 @@ header {
 
 .calendar-contents { display: contents; }
 .date-cell { min-height: 100px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 4px; font-size: 0.75rem; display: flex; flex-direction: column; gap: 2px; }
+
+/* 土日の背景色 */
 .date-cell.is-weekend { background-color: var(--weekend-bg); }
+
 .is-today { background-color: #fff9db !important; outline: 2px solid var(--sun-color) inset; }
 .date-num { font-weight: bold; }
 
@@ -55,17 +57,22 @@ header {
 /* 休み：オレンジ */
 .is-holiday { background: var(--holiday-bg) !important; color: var(--holiday-accent) !important; border-left: 3px solid var(--holiday-accent) !important; }
 
-/* 休息不足アラート：警告色 */
+/* 休息不足アラート */
 .is-short-rest {
     background: var(--warning-bg) !important;
     color: var(--warning-accent) !important;
     border-left: 3px solid var(--warning-accent) !important;
-}
-.is-short-rest::after {
-    content: ' ⚠️ 休息不足';
-    font-size: 0.5rem;
-    display: block;
     font-weight: bold;
+}
+/* 足りない時間を表示する部分のスタイル */
+.short-val {
+    display: inline-block;
+    background: var(--warning-accent);
+    color: #fff;
+    padding: 0 3px;
+    border-radius: 3px;
+    margin-left: 3px;
+    font-size: 0.55rem;
 }
 
 .memo-tag { background: var(--memo-bg); color: var(--memo-accent); border-left: 3px solid var(--memo-accent); margin-top: auto; }

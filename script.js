@@ -4,37 +4,24 @@ let currentMonth = new Date().getMonth() + 1;
 window.addEventListener('DOMContentLoaded', () => init());
 
 async function init() {
+    // デフォルトで千尋さんの情報を隠す設定を適用
+    document.body.classList.add('hide-chihiro', 'hide-chihiro-task');
     setupEvents();
     await renderCalendar(currentYear, currentMonth);
 }
 
-// 時間解析ロジックの強化版
 function timeStringToMinutes(str) {
     if (!str) return null;
-    
-    // 1. 記号を整理 (コロンや波線を統一)
     const cleanStr = str.replace(/[:：]/g, '').replace(/[～ー]/g, '-');
-    
-    // 2. 「数字-数字」のパターンを抽出
     const match = cleanStr.match(/(\d{1,4})-(\d{1,4})/);
     if (!match) return null;
-
     const parseTime = (t) => {
-        if (t.length <= 2) {
-            // "14" や "9" のような2桁以下の場合は時単位
-            return parseInt(t) * 60;
-        } else {
-            // "730" や "1215" のような3〜4桁の場合
-            const h = parseInt(t.slice(0, -2));
-            const m = parseInt(t.slice(-2));
-            return h * 60 + m;
-        }
+        if (t.length <= 2) return parseInt(t) * 60;
+        const h = parseInt(t.slice(0, -2));
+        const m = parseInt(t.slice(-2));
+        return h * 60 + m;
     };
-
-    return {
-        start: parseTime(match[1]),
-        end: parseTime(match[2])
-    };
+    return { start: parseTime(match[1]), end: parseTime(match[2]) };
 }
 
 async function renderCalendar(year, month) {
@@ -44,19 +31,15 @@ async function renderCalendar(year, month) {
 
     const firstDay = new Date(year, month - 1, 1).getDay();
     const lastDate = new Date(year, month, 0).getDate();
-    
-    // 当月のデータを取得
     const rows = await fetchMonthData(year, month);
     
-    // 月末の計算用に「翌月1日」のデータもこっそり取得（オプション機能）
     let nextMonthFirstRow = null;
     try {
         const nextRows = await fetchMonthData(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1);
         nextMonthFirstRow = nextRows.find(r => parseInt(r[0]) === 1);
-    } catch (e) { /* 翌月シートがない場合は無視 */ }
+    } catch (e) {}
 
     calendarBody.innerHTML = '';
-
     for (let i = 0; i < firstDay; i++) {
         calendarBody.appendChild(Object.assign(document.createElement('div'), {className: 'date-cell empty'}));
     }
@@ -78,8 +61,6 @@ async function renderCalendar(year, month) {
                     atsushiClass = "is-holiday";
                 } else {
                     const todayTimes = timeStringToMinutes(dayData[2]);
-                    
-                    // 翌日の出社時間を探す（月末なら翌月1日のデータを見る）
                     let tomorrowTimes = null;
                     if (date < lastDate) {
                         const nextDayData = rows.find(r => parseInt(r[0]) === date + 1);
@@ -87,7 +68,6 @@ async function renderCalendar(year, month) {
                     } else {
                         tomorrowTimes = nextMonthFirstRow ? timeStringToMinutes(nextMonthFirstRow[2]) : null;
                     }
-
                     if (todayTimes && tomorrowTimes) {
                         const restMinutes = (1440 - todayTimes.end) + tomorrowTimes.start;
                         if (restMinutes < 14 * 60) {
@@ -99,7 +79,6 @@ async function renderCalendar(year, month) {
                 }
                 cell.innerHTML += `<div class="shift-tag atsushi-tag ${atsushiClass}">${dayData[2]}${shortText}</div>`;
             }
-            
             if (dayData[3]) cell.innerHTML += `<div class="shift-tag atsushi-task-tag">T: ${dayData[3]}</div>`;
             if (dayData[4]) cell.innerHTML += `<div class="shift-tag chihiro-tag">${dayData[4]}</div>`;
             if (dayData[5]) cell.innerHTML += `<div class="shift-tag chihiro-task-tag">T: ${dayData[5]}</div>`;
@@ -116,7 +95,6 @@ async function fetchMonthData(y, m) {
     return data.ok ? data.rows : [];
 }
 
-// --- 以下、showDetail, handleSave, setupEvents は前回のままでOK ---
 function showDetail(date, data) {
     const modal = document.getElementById('detailModal');
     document.getElementById('modalDateTitle').innerText = `${currentMonth}月 ${date}日`;

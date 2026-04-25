@@ -8,6 +8,19 @@ async function init() {
     await renderCalendar(currentYear, currentMonth);
 }
 
+// 数字の文字列（1215など）を「分（735分）」に変換するヘルパー
+function timeStringToMinutes(str) {
+    if (!str) return null;
+    // 正規表現で「数字-数字」のパターンを探す
+    const match = str.replace(/[:：]/g, '').match(/(\d{1,2})(\d{2})-(\d{1,2})(\d{2})/);
+    if (!match) return null;
+    
+    return {
+        start: parseInt(match[1]) * 60 + parseInt(match[2]), // 出社（分）
+        end: parseInt(match[3]) * 60 + parseInt(match[4])   // 退勤（分）
+    };
+}
+
 async function renderCalendar(year, month) {
     const calendarBody = document.getElementById('calendarBody');
     document.getElementById('currentMonth').innerText = `${year}年 ${month}月`;
@@ -32,19 +45,32 @@ async function renderCalendar(year, month) {
         cell.innerHTML = `<div class="date-num">${date}</div>`;
         
         if (dayData) {
-            // 篤志: シフト(2) 「休」が含まれていたら is-holiday クラスを付与
+            // --- 篤志のインターバル計算 ---
+            let atsushiClass = "";
             if (dayData[2]) {
-                const isHoliday = dayData[2].includes('休');
-                const holidayClass = isHoliday ? 'is-holiday' : '';
-                cell.innerHTML += `<div class="shift-tag atsushi-tag ${holidayClass}">${dayData[2]}</div>`;
+                if (dayData[2].includes('休')) {
+                    atsushiClass = "is-holiday";
+                } else {
+                    // 当日の退勤時間
+                    const todayTimes = timeStringToMinutes(dayData[2]);
+                    // 翌日のデータを取得
+                    const nextDayData = rows.find(r => parseInt(r[0]) === date + 1);
+                    const tomorrowTimes = nextDayData ? timeStringToMinutes(nextDayData[2]) : null;
+
+                    if (todayTimes && tomorrowTimes) {
+                        // 休息時間 = (24h - 今日の退勤) + 明日の出社
+                        const restMinutes = (1440 - todayTimes.end) + tomorrowTimes.start;
+                        if (restMinutes < 14 * 60) { // 14時間（840分）未満なら
+                            atsushiClass = "is-short-rest";
+                        }
+                    }
+                }
+                cell.innerHTML += `<div class="shift-tag atsushi-tag ${atsushiClass}">${dayData[2]}</div>`;
             }
-            if (dayData[3]) cell.innerHTML += `<div class="shift-tag atsushi-task-tag">T: ${dayData[3]}</div>`;
             
-            // 千尋
+            if (dayData[3]) cell.innerHTML += `<div class="shift-tag atsushi-task-tag">T: ${dayData[3]}</div>`;
             if (dayData[4]) cell.innerHTML += `<div class="shift-tag chihiro-tag">${dayData[4]}</div>`;
             if (dayData[5]) cell.innerHTML += `<div class="shift-tag chihiro-task-tag">T: ${dayData[5]}</div>`;
-            
-            // 備考
             if (dayData[6]) cell.innerHTML += `<div class="shift-tag memo-tag">${dayData[6]}</div>`;
         }
         cell.onclick = () => showDetail(date, dayData);
@@ -65,21 +91,22 @@ function showDetail(date, data) {
         <div class="edit-section">
             <p><strong>篤志:</strong> ${data ? data[2] : '-'}</p>
             <input type="text" id="task-atsushi" placeholder="篤志へ追記...">
-            <button onclick="handleSave(${date}, 'atsushi')">書込</button>
+            <button onclick="handleSave(${date}, '篤志')">書込</button>
         </div>
         <hr>
         <div class="edit-section">
             <p><strong>千尋:</strong> ${data ? data[4] : '-'}</p>
             <input type="text" id="task-chihiro" placeholder="千尋へ追記...">
-            <button onclick="handleSave(${date}, 'chihiro')">書込</button>
+            <button onclick="handleSave(${date}, '千尋')">書込</button>
         </div>`;
     modal.classList.remove('hidden');
 }
 
 window.handleSave = async (day, user) => {
-    const val = document.getElementById(`task-${user}`).value;
+    const userId = user === '篤志' ? 'atsushi' : 'chihiro';
+    const val = document.getElementById(`task-${userId}`).value;
     if(!val) return;
-    const res = await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ year: currentYear, month: currentMonth, day: day, user: user, task: val, mode: "" }) });
+    const res = await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ year: currentYear, month: currentMonth, day: day, user: userId, task: val, mode: "" }) });
     const txt = await res.text();
     if(txt.includes("✅")) { alert("保存完了！"); location.reload(); }
 };

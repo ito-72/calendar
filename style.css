@@ -10,26 +10,24 @@
     --memo-bg: #e8f5e9;
     --memo-accent: #2e7d32;
     --weekend-bg: #ffe4b5;
-    /* 休み用のオレンジ */
     --holiday-bg: #fff3e0;
     --holiday-accent: #ef6c00;
+    /* 休息不足アラート用の色 */
+    --warning-bg: #ffebee;
+    --warning-accent: #e53935;
 }
 
 body {
     font-family: 'M PLUS Rounded 1c', sans-serif;
     background-color: var(--bg-color);
-    margin: 0;
-    color: #444;
+    margin: 0; color: #444;
     padding-bottom: calc(env(safe-area-inset-bottom) + 70px);
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
 }
 
 header {
     padding-top: calc(env(safe-area-inset-top) + 15px);
-    padding-bottom: 10px;
-    background: #ffffff;
+    padding-bottom: 10px; background: #ffffff;
     border-bottom: 1px solid var(--border-color);
     position: sticky; top: 0; z-index: 10;
 }
@@ -48,35 +46,38 @@ header {
 .is-today { background-color: #fff9db !important; outline: 2px solid var(--sun-color) inset; }
 .date-num { font-weight: bold; }
 
-/* タグ共通 */
-.shift-tag { padding: 3px 5px; border-radius: 6px; font-size: 0.6rem; line-height: 1.2; white-space: pre-wrap; word-break: break-all; }
+.shift-tag { padding: 3px 5px; border-radius: 6px; font-size: 0.6rem; line-height: 1.2; white-space: pre-wrap; word-break: break-all; position: relative; }
 
 /* 篤志・千尋通常色 */
 .atsushi-tag, .atsushi-task-tag { background: var(--atsushi-bg); color: var(--atsushi-accent); border-left: 3px solid var(--atsushi-accent); }
 .chihiro-tag, .chihiro-task-tag { background: var(--chihiro-bg); color: var(--chihiro-accent); border-left: 3px solid var(--chihiro-accent); }
 
-/* 篤志の「休」用オレンジ */
-.atsushi-tag.is-holiday {
-    background: var(--holiday-bg);
-    color: var(--holiday-accent);
-    border-left: 3px solid var(--holiday-accent);
+/* 休み：オレンジ */
+.is-holiday { background: var(--holiday-bg) !important; color: var(--holiday-accent) !important; border-left: 3px solid var(--holiday-accent) !important; }
+
+/* 休息不足アラート：警告色 */
+.is-short-rest {
+    background: var(--warning-bg) !important;
+    color: var(--warning-accent) !important;
+    border-left: 3px solid var(--warning-accent) !important;
+}
+.is-short-rest::after {
+    content: ' ⚠️ 休息不足';
+    font-size: 0.5rem;
+    display: block;
+    font-weight: bold;
 }
 
 .memo-tag { background: var(--memo-bg); color: var(--memo-accent); border-left: 3px solid var(--memo-accent); margin-top: auto; }
 .atsushi-task-tag, .chihiro-task-tag { font-style: italic; opacity: 0.9; }
 
-/* 表示・非表示ロジック */
+/* タブ表示・非表示 */
 .hide-atsushi .atsushi-tag { display: none; }
 .hide-atsushi-task .atsushi-task-tag { display: none; }
 .hide-chihiro .chihiro-tag { display: none; }
 .hide-chihiro-task .chihiro-task-tag { display: none; }
 
-/* 下部タブ */
-.bottom-tabs {
-    position: fixed; bottom: 0; left: 0; width: 100%; display: flex;
-    background: #fff; border-top: 1px solid var(--border-color);
-    padding-bottom: env(safe-area-inset-bottom); z-index: 20;
-}
+.bottom-tabs { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; background: #fff; border-top: 1px solid var(--border-color); padding-bottom: env(safe-area-inset-bottom); z-index: 20; }
 .tab-btn { flex: 1; border: none; background: none; padding: 12px 5px; font-size: 0.65rem; font-weight: bold; color: #ccc; transition: 0.2s; }
 .tab-btn[data-target="atsushi"].active { color: var(--atsushi-accent); border-top: 3px solid var(--atsushi-accent); }
 .tab-btn[data-target="atsushi-task"].active { color: var(--atsushi-accent); border-top: 3px solid var(--atsushi-accent); }

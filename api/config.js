@@ -1,1 +1,1 @@
-export const GAS_URL = "ここにコピーしたGASのURLを貼り付け";
+export const GAS_URL = "https://script.google.com/macros/s/AKfycby_1vbPvqswOOof_V3XdYH25T7ncenOkSX0bWFAKIAqiv0pUF2p0_Xhlz48WAXA7An7Fw/exec";

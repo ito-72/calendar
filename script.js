@@ -95,3 +95,14 @@ function setupEvents() {
     document.getElementById('nextBtn').onclick = () => { currentMonth++; if(currentMonth>12){currentMonth=1; currentYear++;} renderCalendar(currentYear, currentMonth); };
     document.getElementById('closeModal').onclick = () => document.getElementById('detailModal').classList.add('hidden');
 }
+
+async function fetchMonthData(y, m) {
+    const res = await fetch('/api/calendar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ mode: "getRows", view: "month", year: y, month: m })
+    });
+    const data = await res.json();
+    console.log("届いたデータ:", data); // ← これを足して、F12で中身を確認！
+    return data.ok ? data.rows : [];
+}

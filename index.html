@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>ふたりのカレンダー</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ふたりカレ"> <link rel="manifest" href="/manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ふたりカレ">
+    <title>ふたりのカレンダー</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -35,6 +36,13 @@
                 <div id="calendarBody" class="calendar-contents"></div>
             </div>
         </main>
+
+        <nav class="bottom-tabs">
+            <button class="tab-btn active" data-target="atsushi">篤志</button>
+            <button class="tab-btn active" data-target="atsushi-task">篤志Task</button>
+            <button class="tab-btn active" data-target="chihiro">千尋</button>
+            <button class="tab-btn active" data-target="chihiro-task">千尋Task</button>
+        </nav>
 
         <div id="detailModal" class="modal hidden">
             <div class="modal-content">

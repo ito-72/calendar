@@ -68,21 +68,12 @@ async function renderCalendar(year, month) {
                     } else {
                         tomorrowTimes = nextMonthFirstRow ? timeStringToMinutes(nextMonthFirstRow[2]) : null;
                     }
-
                     if (todayTimes && tomorrowTimes) {
                         const restMinutes = (1440 - todayTimes.end) + tomorrowTimes.start;
                         if (restMinutes < 14 * 60) {
-                            // 14時間未満：不足時間をアラート表示
                             atsushiClass = "is-short-rest";
                             const diff = (14 * 60 - restMinutes) / 60;
                             shortText = `<span class="short-val">-${diff.toFixed(1)}h</span>`;
-                        } else {
-                            // 14時間以上：退勤リミットを逆算表示 (L HH:mm)
-                            const limitMinutes = 600 + tomorrowTimes.start;
-                            const h = Math.floor(limitMinutes / 60) % 24;
-                            const m = limitMinutes % 60;
-                            const limitTimeStr = `${h}:${m.toString().padStart(2, '0')}`;
-                            shortText = `<span class="limit-val">L ${limitTimeStr}</span>`;
                         }
                     }
                 }

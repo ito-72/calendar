@@ -31,7 +31,7 @@
                 <div class="day-label">火</div>
                 <div class="day-label">水</div>
                 <div class="day-label">木</div>
-                <div class="day-label">金</div>
+                <div class="day-label scheduler-thu">水</div>
                 <div class="day-label sat">土</div>
                 <div id="calendarBody" class="calendar-contents"></div>
             </div>
@@ -53,5 +53,12 @@
         </div>
     </div>
     <script src="script.js" type="module"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW reg error:', err));
+        });
+      }
+    </script>
 </body>
 </html>

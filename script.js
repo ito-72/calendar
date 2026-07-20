@@ -25,21 +25,53 @@ function timeStringToMinutes(str) {
 }
 
 async function renderCalendar(year, month) {
-    const calendarBody = document.getElementById('calendarBody');
     document.getElementById('currentMonth').innerText = `${year}年 ${month}月`;
-    calendarBody.innerHTML = '<div style="grid-column:span 7; text-align:center; padding:20px;">読込中...</div>';
+    
+    const cacheKeyCurr = `cal_data_${year}_${month}`;
+    const nextY = month === 12 ? year + 1 : year;
+    const nextM = month === 12 ? 1 : month + 1;
+    const cacheKeyNext = `cal_data_${nextY}_${nextM}`;
+
+    const cachedCurr = localStorage.getItem(cacheKeyCurr);
+    const cachedNext = localStorage.getItem(cacheKeyNext);
+
+    // 1. キャッシュがあれば即座に描画（爆速表示）
+    if (cachedCurr) {
+        const rowsCurr = JSON.parse(cachedCurr);
+        const rowsNext = cachedNext ? JSON.parse(cachedNext) : [];
+        const nextMonthFirstRow = rowsNext.find(r => parseInt(r[0]) === 1);
+        buildCalendarUI(year, month, rowsCurr, nextMonthFirstRow);
+    } else {
+        const calendarBody = document.getElementById('calendarBody');
+        calendarBody.innerHTML = '<div style="grid-column:span 7; text-align:center; padding:20px;">読込中...</div>';
+    }
+
+    // 2. 裏で最新データを並列取得 (Promise.all)
+    try {
+        const [rowsCurr, rowsNext] = await Promise.all([
+            fetchMonthData(year, month),
+            fetchMonthData(nextY, nextM)
+        ]);
+
+        // キャッシュ保存
+        localStorage.setItem(cacheKeyCurr, JSON.stringify(rowsCurr));
+        localStorage.setItem(cacheKeyNext, JSON.stringify(rowsNext));
+
+        // 最新データで画面を更新
+        const nextMonthFirstRow = rowsNext.find(r => parseInt(r[0]) === 1);
+        buildCalendarUI(year, month, rowsCurr, nextMonthFirstRow);
+    } catch (e) {
+        console.error("データ取得エラー:", e);
+    }
+}
+
+function buildCalendarUI(year, month, rows, nextMonthFirstRow) {
+    const calendarBody = document.getElementById('calendarBody');
+    calendarBody.innerHTML = '';
 
     const firstDay = new Date(year, month - 1, 1).getDay();
     const lastDate = new Date(year, month, 0).getDate();
-    const rows = await fetchMonthData(year, month);
-    
-    let nextMonthFirstRow = null;
-    try {
-        const nextRows = await fetchMonthData(month === 12 ? year + 1 : year, month === 12 ? 1 : month + 1);
-        nextMonthFirstRow = nextRows.find(r => parseInt(r[0]) === 1);
-    } catch (e) {}
 
-    calendarBody.innerHTML = '';
     for (let i = 0; i < firstDay; i++) {
         calendarBody.appendChild(Object.assign(document.createElement('div'), {className: 'date-cell empty'}));
     }
@@ -102,23 +134,44 @@ function showDetail(date, data) {
         <div class="edit-section">
             <p><strong>篤志:</strong> ${data ? data[2] : '-'}</p>
             <input type="text" id="task-atsushi" placeholder="篤志へ追記...">
-            <button onclick="handleSave(${date}, 'atsushi')">書込</button>
+            <button id="save-atsushi-btn" onclick="handleSave(${date}, 'atsushi')">書込</button>
         </div>
         <hr>
         <div class="edit-section">
             <p><strong>千尋:</strong> ${data ? data[4] : '-'}</p>
             <input type="text" id="task-chihiro" placeholder="千尋へ追記...">
-            <button onclick="handleSave(${date}, 'chihiro')">書込</button>
+            <button id="save-chihiro-btn" onclick="handleSave(${date}, 'chihiro')">書込</button>
         </div>`;
     modal.classList.remove('hidden');
 }
 
 window.handleSave = async (day, user) => {
-    const val = document.getElementById(`task-${user}`).value;
+    const input = document.getElementById(`task-${user}`);
+    const btn = document.getElementById(`save-${user}-btn`);
+    const val = input.value;
     if(!val) return;
-    const res = await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ year: currentYear, month: currentMonth, day: day, user: user, task: val, mode: "" }) });
-    const txt = await res.text();
-    if(txt.includes("✅")) { alert("保存完了！"); location.reload(); }
+
+    btn.disabled = true;
+    btn.innerText = "保存中...";
+
+    try {
+        const res = await fetch('/api/calendar', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ year: currentYear, month: currentMonth, day: day, user: user, task: val, mode: "" }) });
+        const txt = await res.text();
+        if(txt.includes("✅")) { 
+            document.getElementById('detailModal').classList.add('hidden');
+            // キャッシュ破棄して画面を再描画（全リロードはしない）
+            localStorage.removeItem(`cal_data_${currentYear}_${currentMonth}`);
+            await renderCalendar(currentYear, currentMonth);
+        } else {
+            alert("保存失敗: " + txt);
+            btn.disabled = false;
+            btn.innerText = "書込";
+        }
+    } catch(e) {
+        alert("エラーが発生しました");
+        btn.disabled = false;
+        btn.innerText = "書込";
+    }
 };
 
 function setupEvents() {

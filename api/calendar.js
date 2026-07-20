@@ -9,6 +9,12 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload),
     });
     const text = await response.text();
+    
+    // 書き込み以外（データ取得）の場合はショートキャッシュを設定
+    if (payload && payload.mode === "getRows") {
+      res.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate=59');
+    }
+
     try { res.status(200).json(JSON.parse(text)); } catch { res.status(200).send(text); }
   } catch (err) { res.status(500).json({ error: err.message }); }
 }
